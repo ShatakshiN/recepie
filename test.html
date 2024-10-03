@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-container label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        .form-container input[type="text"], 
+        .form-container input[type="time"],
+        .form-container select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-container input[type="file"] {
+            margin-bottom: 12px;
+        }
+        .form-container button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #recipes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .recipe {
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 10px;
+            padding: 15px;
+            width: 45%;
+        }
+
+        .recipe img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        #results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Upload Recipe</h2>
+        <form id="recipeForm">
+            <label for="title">Recipe Title</label>
+            <input type="text" id="title" name="title" required>
+
+            <!--label for="dietaryPreferences">Dietary Preferences</label>
+            <input type="text" id="dietaryPreferences" name="dietaryPreferences" required-->
+            <select name="dietaryPreferences">
+                <option value="">All Dietary Preferences</option>
+                <option value="vegan">vegan</option>
+                <option value="vegetarian">vegetarian</option>
+                <option value="gluten-free">gluten-free</option>
+            </select>
+
+            <label for="difficultyLevel">Difficulty Level</label>
+            <select id="difficultyLevel" name="difficultyLevel" required>
+                <option value="Easy">easy</option>
+                <option value="Medium">medium</option>
+                <option value="Hard">hard</option>
+            </select>
+
+            <label for="cookingTime">Cooking Time</label>
+            <input type="time" id="cookingTime" name="cookingTime" required>
+
+            <label for="image">Upload Image</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+
+            <button type="submit">Submit Recipe</button>
+        </form>
+
+        <div id="message"></div>
+
+        <div class="search-container">
+            <h2>Search Recipes</h2>
+            <form id="searchForm">
+                <input type="text" name="titles" id="titles" placeholder="Search by title" />
+                <select name="dietaryPref" id="dietaryPref">
+                    <option value="">All Dietary Preferences</option>
+                    <option value="vegan">vegan</option>
+                    <option value="vegetarian">vegetarian</option>
+                    <option value="gluten-free">gluten-free</option>
+                </select>
+                <select name="difficultyLev" id="difficultyLev">
+                    <option value="">All Difficulty Levels</option>
+                    <option value="easy">easy</option>
+                    <option value="medium">medium</option>
+                    <option value="hard">hard</option>
+                </select>
+
+                <button type="submit">Search</button>
+            </form>
+        </div>
+    
+
+        <div id="recipe-list"></div>
+            <h2>Uploaded Recipes</h2>
+            <div id="recipes"></div>
+        </div>
+
+        <div id="results">
+            <h2>Results</h2>
+            <div id="recipe-list"></div>
+        </div>
+    
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+</body>
+</html>
