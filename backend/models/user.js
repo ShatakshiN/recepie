@@ -24,6 +24,14 @@ const Users  = sequelize.define('SignUp',{
         type : Sequelize.STRING,
         allowNull :false
         
+    },
+    isAdmin: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false, // Only one user can be an admin
+    },
+    banned: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
     }
 });
 

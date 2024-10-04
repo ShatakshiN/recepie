@@ -16,7 +16,7 @@ const Users  =require('../models/user');
 const Recipe = require('../models/recipe');
 
 //middleware 
-const Authenticate = require('../middleware/auth');
+
 const authenticate = require('../middleware/auth');
 
 // Configure the AWS SDK
@@ -63,6 +63,7 @@ router.post('/recipes', upload.single('image'), authenticate,async (req, res) =>
           dietaryPreferences: req.body.dietaryPreferences,
           difficultyLevel: req.body.difficultyLevel,
           cookingTime: req.body.cookingTime,
+          SignUpId: req.user.id
       });
 
       console.log('Uploaded file:', req.file);
@@ -81,6 +82,16 @@ router.get('/recipes', authenticate,async (req, res) => {
   } catch (error) {
       console.error('Error fetching recipes:', error);
       res.status(500).json({ error: 'Failed to fetch recipes' });
+  }
+});
+
+router.get('/All-user', authenticate, async(req,res,next)=>{
+  try{
+    const userInfo = await Users.findAll();
+    res.json(userInfo)
+  }catch(e){
+    console.error(e);
+    res.status(500).json({error : 'failed' })
   }
 });
 

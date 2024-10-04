@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List with Follow Feature</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .user-list, .follow-section {
+            margin: 20px 0;
+        }
+        .user {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .user button {
+            padding: 5px 10px;
+        }
+        .follow-section {
+            display: none;
+            margin-top: 20px;
+        }
+        .f-list{
+            margin: 20px 0;
+
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Users</h1>
+
+    <!-- User List -->
+    <div id="user-list" class="user-list">
+        <!-- This will be dynamically populated with users -->
+    </div>
+
+    <!-- Buttons to view followers and following -->
+    <!--button id="followers-btn">Followers</button-->
+    <div id="following-list" class="f-list">
+        <button id="following-btn">Following</button>
+    </div>
+    
+
+    <div id="followers-list" class="f-list">
+        <button id="followers-btn">Followers</button>
+    </div>
+
+    <script src="follow.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+
+</body>
+</html>
