@@ -193,7 +193,7 @@ const getCurrentUserIdFromToken = (token) => {
     return payload.userId; // Assuming your token payload has a field named 'id'
 };
 
-async function checkIfAdmin(){
+/* async function checkIfAdmin(){
      try{
         const response = await axios.get('http://localhost:4000/All-user',{
             headers: {
@@ -202,6 +202,6 @@ async function checkIfAdmin(){
         })
      }
 
-}
+} */
 
 

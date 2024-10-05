@@ -1,158 +1,45 @@
-/* const token = localStorage.getItem("token");
+const token = localStorage.getItem("token");
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem("token");
-
-    const userListContainer = document.getElementById('user-list');
-    const loadUsersButton = document.createElement('button');
-    loadUsersButton.textContent = "Load Users";
-    document.body.insertBefore(loadUsersButton, userListContainer);
-
-    loadUsersButton.addEventListener('click', fetchUsers);
-
-    async function fetchUsers() {
-        try {
-            const response = await axios.get('http://localhost:4000/get-Users', {
-                headers: {
-                    "Authorization": token
-                }
-            });
-            const users = response.data.userList;
-
-            users.forEach(user => {
-                const userDiv = document.createElement('div');
-                userDiv.classList.add('user');
-
-                const userName = document.createElement('span');
-                userName.textContent = user.name;
-
-                const followButton = document.createElement('button');
-                followButton.textContent = 'Follow';
-                followButton.dataset.userId = user.id;
-
-                userDiv.appendChild(userName);
-                userDiv.appendChild(followButton);
-                userListContainer.appendChild(userDiv);
-
-                followButton.addEventListener('click', () => {
-                    followUser(user.id, userName, followButton);
-                });
-            });
-        } catch (error) {
-            console.error('Error fetching users:', error);
-        }
-    }
-
-    async function followUser(userId, userNameElement, followButton) {
-        try {
-            const currentUserId = getCurrentUserIdFromToken(token); // Create a function to extract user ID from the token
-
-
-            const response = await axios.post(`http://localhost:4000/follow/${userId}`, {currentUserId}, {
-                headers: {
-                    "Authorization": token
-                }
-            });
-            console.log('Follow response:', response.data);
-
-            // Update the button to show 'Unfollow'
-            followButton.textContent = 'Unfollow';
-            followButton.removeEventListener('click', followUser); // Remove old event listener
-
-            followButton.addEventListener('click', () => {
-                unfollowUser(userId, userNameElement, followButton);
-            });
-
-            // Optionally, you can also update the followers list in the UI
-            updateFollowersList(userNameElement.textContent);
-        } catch (error) {
-            console.error('Error following user:', error);
-        }
-    }
-
-    async function unfollowUser(userId, userNameElement, followButton) {
-        try {
-            const response = await axios.delete(`http://localhost:4000/unfollow/${userId}`, {
-                headers: {
-                    "Authorization": token
-                }
-            });
-
-            // Update the button to show 'Follow'
-            followButton.textContent = 'Follow';
-            followButton.removeEventListener('click', unfollowUser); // Remove old event listener
-
-            followButton.addEventListener('click', () => {
-                followUser(userId, userNameElement, followButton);
-            });
-
-            // Optionally, update the followers list in the UI
-            removeFromFollowersList(userNameElement.textContent);
-        } catch (error) {
-            console.error('Error unfollowing user:', error);
-        }
-    }
-
-    function updateFollowersList(userName) {
-        const followersList = document.getElementById('followers-list'); // Assuming you have a container for the followers list
-        const newFollower = document.createElement('div');
-        newFollower.textContent = userName;
-        followersList.appendChild(newFollower);
-    }
-
-    function removeFromFollowersList(userName) {
-        const followersList = document.getElementById('followers-list'); 
-        const followers = followersList.querySelectorAll('div');
-
-        followers.forEach(follower => {
-            if (follower.textContent === userName) {
-                followersList.removeChild(follower);
-            }
-        });
-    }
-});
-
-// Function to extract user ID from the token
-const getCurrentUserIdFromToken = (token) => {
-    if (!token) return null;
-    const payload = JSON.parse(atob(token.split('.')[1])); // Decode the token to get payload
-    return payload.userId; // Assuming your token payload has a field named 'id'
-};
- */
-
-const token = localStorage.getItem("token");
-
-
-document.addEventListener('DOMContentLoaded', () => {
     const socket = io('http://localhost:4000', {
         path: "/socket.io"
     });
-    // Listen for follow events (outside of followUser)
+
+    // Listen for follow events
     socket.on('followed', (data) => {
         alert(`${data.followerName} is now following you!`);
-        console.log(`${data.followerName}`)
-        // Optionally, update the UI to reflect the new follower
+        console.log(`${data.followerName} is following user with ID ${data.followingId}`);
     });
 
-    // Listen for unfollow events (outside of unfollowUser)
+    // Listen for unfollow events
     socket.on('unfollowed', (data) => {
-        alert(`You have unfollowed a user!`);
-        // Optionally, update the UI to reflect the unfollowing
+        alert(`User with ID ${data.followerId} unfollowed user with ID ${data.followingId}`);
     });
-    const userListContainer = document.getElementById('user-list');
-    const loadUsersButton = document.createElement('button');
-    loadUsersButton.textContent = "Load Users";
-    document.body.insertBefore(loadUsersButton, userListContainer);
 
-    loadUsersButton.addEventListener('click', fetchUsers);
+    const userListContainer = document.getElementById('user-list');
+    const followingList = document.querySelector('#following-list ul');
+    const followersListContainer = document.querySelector('#followers-list ul');
+
+    const getCurrentUserIdFromToken = (token) => {
+        if (!token) return null;
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.userId;
+    };
+
+    // Load users
+    fetchUsers();
+    fetchFollowers();
+    fetchFollowing();
 
     async function fetchUsers() {
-        try {
+        /* try {
             const response = await axios.get('http://localhost:4000/get-Users', {
                 headers: {
                     "Authorization": token
                 }
             });
             const users = response.data.userList;
+            userListContainer.innerHTML = '';
 
             users.forEach(user => {
                 const userDiv = document.createElement('div');
@@ -170,109 +57,173 @@ document.addEventListener('DOMContentLoaded', () => {
                 userListContainer.appendChild(userDiv);
 
                 followButton.addEventListener('click', () => {
-                    followUser(user.id, userName, followButton);
+                    followUser(user.id, userName.textContent, followButton);
                 });
             });
         } catch (error) {
             console.error('Error fetching users:', error);
-        }
-    }
-    
-
-    async function followUser(userId, userNameElement, followButton) {
+        } */
         try {
-            const currentUserId = getCurrentUserIdFromToken(token); // Extract user ID from the token
+        const response = await axios.get('http://localhost:4000/get-Users', {
+            headers: {
+                "Authorization": token
+            }
+        });
+        const users = response.data.userList;
+        userListContainer.innerHTML = '';
 
-            const response = await axios.post(`http://localhost:4000/follow/${userId}`, { currentUserId }, {
-                headers: {
-                    "Authorization": token
-                }
+        users.forEach(user => {
+            const userDiv = document.createElement('div');
+            userDiv.classList.add('user');
+
+            const userName = document.createElement('span');
+            userName.textContent = user.name;
+
+            const followButton = document.createElement('button');
+            followButton.textContent = 'Follow';
+            followButton.dataset.userId = user.id;
+
+            const seeRecipeButton = document.createElement('button');
+            seeRecipeButton.textContent = 'See Recipes';
+            seeRecipeButton.addEventListener('click', () => {
+                viewUserContributions(user.id, user.name);
             });
-            console.log('Follow response:', response.data);
 
-            // Update the button to show 'Unfollow'
-            followButton.textContent = 'Unfollow';
-            followButton.removeEventListener('click', followUser); // Remove old event listener
+            userDiv.appendChild(userName);
+            userDiv.appendChild(followButton);
+            userDiv.appendChild(seeRecipeButton);
+            userListContainer.appendChild(userDiv);
 
             followButton.addEventListener('click', () => {
-                unfollowUser(userId, userNameElement, followButton);
+                followUser(user.id, userName.textContent, followButton);
+            });
+        });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+    }
+    }
+
+    async function followUser(userId, userName, followButton) {
+        try {
+            const currentUserId = getCurrentUserIdFromToken(token);
+            await axios.post(`http://localhost:4000/follow/${userId}`, { currentUserId }, {
+                headers: { "Authorization": token }
             });
 
-            // Update the followers and following lists
-            updateFollowersList(userNameElement.textContent);
-            updateFollowingList(userNameElement.textContent);
-            
+            followButton.textContent = 'Unfollow';
+            followButton.removeEventListener('click', followUser);
+            followButton.addEventListener('click', () => unfollowUser(userId, followButton));
+
+            // Add to following list
+            const li = document.createElement('li');
+            li.textContent = userName;
+            followingList.appendChild(li);
+
         } catch (error) {
             console.error('Error following user:', error);
         }
     }
 
-    async function unfollowUser(userId, userNameElement, followButton) {
+    async function unfollowUser(userId, followButton) {
         try {
-            const response = await axios.delete(`http://localhost:4000/unfollow/${userId}`, {
-                headers: {
-                    "Authorization": token
-                }
+            const currentUserId = getCurrentUserIdFromToken(token);
+            await axios.delete(`http://localhost:4000/unfollow/${userId}`, {
+                headers: { "Authorization": token },
+                data: { currentUserId }
             });
 
-            // Update the button to show 'Follow'
             followButton.textContent = 'Follow';
-            followButton.removeEventListener('click', unfollowUser); // Remove old event listener
+            followButton.removeEventListener('click', unfollowUser);
+            followButton.addEventListener('click', () => followUser(userId, followButton));
 
-            followButton.addEventListener('click', () => {
-                followUser(userId, userNameElement, followButton);
-            });
+            // Remove from following list
+            const liToRemove = document.querySelector(`#following-list li[data-user-id="${userId}"]`);
+            if (liToRemove) followingList.removeChild(liToRemove);
 
-            // Update the followers and following lists
-            removeFromFollowersList(userNameElement.textContent);
-            removeFromFollowingList(userNameElement.textContent);
-      
-            
         } catch (error) {
             console.error('Error unfollowing user:', error);
         }
     }
 
-    function updateFollowersList(userName) {
-        const followersList = document.getElementById('followers-list');
-        const newFollower = document.createElement('div');
-        newFollower.textContent = userName;
-        followersList.appendChild(newFollower);
+    async function fetchFollowers() {
+        try {
+            const currentUserId = getCurrentUserIdFromToken(token);
+            const response = await axios.get(`http://localhost:4000/get-all-followers/${currentUserId}`, {
+                headers: { "Authorization": token }
+            });
+
+            followersListContainer.innerHTML = '';  // Clear list
+            const followers = response.data.followerList;
+
+            followers.forEach(follower => {
+                const li = document.createElement('li');
+                li.textContent = follower.name;
+
+                // Add remove button
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.dataset.userId = follower.id;
+
+                li.appendChild(removeButton);
+                followersListContainer.appendChild(li);
+
+                removeButton.addEventListener('click', () => removeFollower(follower.id, li));
+            });
+
+        } catch (error) {
+            console.error('Error fetching followers:', error);
+        }
+    }
+    async function removeFollower(userId, liElement) {
+        try {
+            const currentUserId = getCurrentUserIdFromToken(token);
+            await axios.delete(`http://localhost:4000/unfollow/${userId}`, {
+                headers: { "Authorization": token },
+                data: { currentUserId }
+            });
+            followersListContainer.removeChild(liElement);
+        } catch (error) {
+            console.error('Error removing follower:', error);
+        }
     }
 
-    function updateFollowingList(userName) {
-        const followingList = document.getElementById('following-list');
-        const newFollowing = document.createElement('div');
-        newFollowing.textContent = userName;
-        followingList.appendChild(newFollowing);
+    async function fetchFollowing() {
+        try {
+            const currentUserId = getCurrentUserIdFromToken(token);
+            const response = await axios.get(`http://localhost:4000/get-all-following/${currentUserId}`, {
+                headers: { "Authorization": token }
+            });
+    
+            followingList.innerHTML = '';  // Clear list
+            const following = response.data.followingList || [];
+    
+            following.forEach(user => {
+                const li = document.createElement('li');
+                li.textContent = user.name;
+
+                // Add unfollow button
+                const unfollowButton = document.createElement('button');
+                unfollowButton.textContent = 'Unfollow';
+                unfollowButton.dataset.userId = user.id;
+
+                li.appendChild(unfollowButton);
+                followingList.appendChild(li);
+
+                unfollowButton.addEventListener('click', () => unfollowUser(user.id, li));
+            });
+    
+        } catch (error) {
+            console.error('Error fetching following list:', error);
+        }
     }
 
-    function removeFromFollowersList(userName) {
-        const followersList = document.getElementById('followers-list'); 
-        const followers = followersList.querySelectorAll('div');
-
-        followers.forEach(follower => {
-            if (follower.textContent === userName) {
-                followersList.removeChild(follower);
-            }
-        });
-    }
-
-    function removeFromFollowingList(userName) {
-        const followingList = document.getElementById('following-list'); 
-        const followings = followingList.querySelectorAll('div');
-
-        followings.forEach(following => {
-            if (following.textContent === userName) {
-                followingList.removeChild(following);
-            }
-        });
-    }
+    
+    fetchFollowers();
+    fetchFollowing();
+    
 });
 
-// Function to extract user ID from the token
-const getCurrentUserIdFromToken = (token) => {
-    if (!token) return null;
-    const payload = JSON.parse(atob(token.split('.')[1])); // Decode the token to get payload
-    return payload.userId; // Assuming your token payload has a field named 'id'
-};
+function viewUserContributions(userId, userName) {
+    // Navigate to a new page or dynamically load the contributions
+    window.location.href = `http://127.0.0.1:5500/frontend/contributions.html?userId=${userId}&name=${encodeURIComponent(userName)}`;
+}

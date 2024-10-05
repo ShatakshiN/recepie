@@ -58,8 +58,13 @@ app.set('io', io);
 Recipe.belongsTo(Users, { constraints: true, onDelete: 'CASCADE' });
 Users.hasMany(Recipe);
 
-Follow.belongsTo(Users, { as: 'Follower' });
-Follow.belongsTo(Users, { as: 'Following' });
+/* Follow.belongsTo(Users, { as: 'Follower' });
+Follow.belongsTo(Users, { as: 'Following' }); */
+
+// Follow associations
+Follow.belongsTo(Users, { as: 'Follower', foreignKey: 'FollowerId' });   // A follower (user) in the Follow model
+Follow.belongsTo(Users, { as: 'Following', foreignKey: 'FollowingId' }); // A followed user in the Follow model
+
 
 Activity.belongsTo(Users, { constraints: true, onDelete: 'CASCADE' })
 Users.hasMany(Activity);

@@ -68,6 +68,11 @@
     <div class="container">
         <a href="follow.html">see users</a>
     </div>
+    <div id="uploaded-recipes">
+        <h2>Your Uploaded Recipes</h2>
+        <div id="recipes"></div>
+        <div id="notifications"></div>
+    </div>
     <div class="form-container">
         <h2>Upload Recipe</h2>
         <form id="recipeForm">
@@ -136,6 +141,7 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
 </body>
 </html>

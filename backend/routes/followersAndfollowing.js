@@ -42,7 +42,7 @@ router.post('/follow/:userId', authenticate ,async(req,res)=>{
         
         // Emit follow event
         const followedUser = await Users.findByPk(followingId);
-        if (followedUser && followedUser) {
+        if (followedUser) {
             console.log("Follower:", followerUser.name, "is now following:", followedUser.name);
             io.emit('followed', { followerId, followingId: followedUser.id, followerName: followerUser.name });
         }
@@ -57,6 +57,7 @@ router.post('/follow/:userId', authenticate ,async(req,res)=>{
 
 router.delete('/unfollow/:userId',authenticate, async(req,res)=>{
     try {
+        const io = req.app.get('io');
         const followerId = req.body.currentUserId;
         const followingId = req.params.userId;
     
@@ -71,5 +72,59 @@ router.delete('/unfollow/:userId',authenticate, async(req,res)=>{
         res.status(500).json({ error: 'Failed to unfollow user' });
     }
 }); 
+
+router.get('/get-all-followers/:userId', authenticate, async (req, res, next) => {
+    const userId = req.params.userId;
+    try {
+        const followers = await Follow.findAll({
+            where: { FollowingId: userId },  // You're looking for users following this user
+            include: [{ model: Users, as: 'Follower', attributes: ['id', 'name'] }]  // Use the 'Follower' alias
+        });
+
+        const followerList = followers.map(follow => ({
+            id: follow.Follower.id,
+            name: follow.Follower.name
+        }));
+
+        res.json({ followerList });
+    } catch (error) {
+        console.error('Error fetching followers:', error.message, error.stack);
+        res.status(500).json({ error: 'An error occurred while fetching followers' });
+    }
+});
+
+// Fetch the list of users that the current user is following
+router.get('/get-all-following/:userId', authenticate, async (req, res, next) => {
+    const userId = req.params.userId;
+    try {
+        const following = await Follow.findAll({
+            where: { FollowerId: userId },  // You're looking for users the current user is following
+            include: [{ model: Users, as: 'Following', attributes: ['id', 'name'] }]  // Use the 'Following' alias
+        });
+
+        const followingList = following.map(follow => ({
+            id: follow.Following.id,
+            name: follow.Following.name
+        }));
+
+        res.json({ followingList });
+    } catch (error) {
+        console.error('Error fetching following list:', error.message, error.stack);
+        res.status(500).json({ error: 'An error occurred while fetching following list' });
+    }
+});
+
+router.get('/user-contributions/:userId', authenticate, async(req,res,next)=>{
+    const userId = req.params.userId
+    try{
+        const contribution = await Recipe.findAll({where:{SignUpId:userId}})
+
+        res.status(200).json({contribution})
+    }catch(e){
+        console.log(error)
+    }
+
+})
+
 
 module.exports = router;

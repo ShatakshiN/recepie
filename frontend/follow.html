@@ -26,9 +26,17 @@
             display: none;
             margin-top: 20px;
         }
-        .f-list{
-            margin: 20px 0;
-
+        .f-list ul, .followers-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .f-list li, .followers-list li {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -43,13 +51,15 @@
 
     <!-- Buttons to view followers and following -->
     <!--button id="followers-btn">Followers</button-->
+    <button id="following-btn">Following</button>
     <div id="following-list" class="f-list">
-        <button id="following-btn">Following</button>
+        <ul></ul>
     </div>
     
 
-    <div id="followers-list" class="f-list">
-        <button id="followers-btn">Followers</button>
+    <button id="followers-btn">Followers</button>
+    <div id="followers-list" class="followers-list">
+        <ul></ul>
     </div>
 
     <script src="follow.js"></script>
